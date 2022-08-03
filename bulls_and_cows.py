@@ -29,19 +29,36 @@ def playing_game():
         break
     return players_number
 
-def control_numbers():
-    players_numbers = playing_game()
-    generated_numbers = generate_numbers()
-    for number in players_numbers:
-        if int(number) in generated_numbers:
-            pass
+def bulls_and_cows_count(hidden_number, players_number):
+    bulls = 0
+    cows = 0
+    for index in range(len(players_number)):
+        number = int(players_number[index])
+        if number == hidden_number[index]:
+            bulls += 1
+        else:
+            if number in hidden_number:
+                cows += 1
+    if bulls == 1:
+        print(f"{bulls} bull.")
+    else:
+        print(f"{bulls} bulls.")
+    if cows == 1:
+        print(f"{cows} cow.")
+    else:
+        print(f"{cows} cows.") 
+    return bulls
+            
+def game_end(bulls):
+    if bulls == 4:
+        return True
+    return False        
 
-def generate_numbers():
+def hidden_number():
     all_numbers = random.sample(range(10), 4)
     while all_numbers[0] == 0 and all_numbers[0] in all_numbers:
         all_numbers[0] = random.randint(1, 9)
     return all_numbers
 
-control_numbers()
 playing_game()
-print(generate_numbers())
+print(hidden_number())
