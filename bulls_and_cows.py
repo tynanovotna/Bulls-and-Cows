@@ -8,29 +8,38 @@ discord: KristýnaN #4503
 
 import random
 import time
-from math import floor
 
 SEPARATOR = "-" * 47
 
 def playing_game():
     start_time = time.time()
     number = hidden_number()
+    count = 1
     while True:
         players_number = input("Enter a number: ")
-        print(SEPARATOR)
         if not players_number.isnumeric():
             print("Given input is not number. Try again.")
+            print(SEPARATOR)
+            continue
         elif int(players_number) < 1000 or int(players_number) > 9999:
             print("Enter only 4 digit number. Try again.")
+            print(SEPARATOR)
+            continue
         bulls, cows = bulls_and_cows_count(number, players_number)
-        #bull, cow = guesing_result(bulls, cows)
-        print(f"{bulls} bulls, {cows} cows.")
+        bull, cow = guesing_result(bulls, cows)
+        print(f"{bulls} {bull}, {cows} {cow}.")
+        print(SEPARATOR)
         end_game = check_game_end(bulls)
-        if end_game == True:
-            break 
+        if end_game:
+            break
+        count += 1 
     end_time = time.time()
+    total_time = end_time - start_time
+    minutes = int(total_time / 60)
+    seconds = int(total_time % 60)
     print(SEPARATOR)
-    print("Time played: ", floor(end_time - start_time), "s.")
+    print(f"Correct, you've guessed the right number in {count} \nguesses, {minutes} minutes & {seconds} seconds!")
+    print("That's Amazing!")
     print(SEPARATOR)
     play_again()
     return players_number
@@ -43,15 +52,16 @@ def welcome_player():
     print(SEPARATOR)
     
 def play_again():
-    another_game = input("Would you like play another game? Y/N ").lower()
+    another_game = input("Would you like to play another game? Y/N ").lower()
+    print(SEPARATOR)
     if another_game == "y" or another_game == "yes":
-        print("superb")
+        playing_game()
     elif another_game == "n" or another_game == "no":
         pass
     else:
         print("Wrong answer, try again.")
         play_again()
-            
+         
 def bulls_and_cows_count(hidden_number, players_number):
     bulls = 0
     cows = 0
@@ -65,12 +75,14 @@ def bulls_and_cows_count(hidden_number, players_number):
     return bulls, cows
 
 def guesing_result(bulls, cows):
-    if bulls == 1 or cows == 1:
+    if bulls == 1:
         bull = "bull"
-        cow = "cow"
     else:
         bull = "bulls"
-        cow = "cows"     
+    if cows == 1:
+        cow = "cow"
+    else:
+        cow = "cows"  
     return bull, cow
 
 def check_game_end(bulls):
@@ -79,10 +91,10 @@ def check_game_end(bulls):
     return False        
 
 def hidden_number():
-    all_numbers = random.sample(range(10), 4)
-    while all_numbers[0] == 0 and all_numbers[0] in all_numbers:
-        all_numbers[0] = random.randint(1, 9)
-    return all_numbers
+    hidden_number = random.sample(range(10), 4)
+    while hidden_number[0] == 0 and hidden_number[0] in hidden_number:
+        hidden_number[0] = random.randint(1, 9)
+    return hidden_number
 
 welcome_player()
 playing_game()
