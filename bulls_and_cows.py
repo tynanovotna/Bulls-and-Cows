@@ -90,7 +90,7 @@ def print_statistics(statistics):
         sum_count += count
         sum_time += total_time
         print(f"Game no.{game} ended in {count} guesses & {minutes} min {seconds} s.")
-    mean_count = int(sum_count / len(statistics))
+    mean_count = sum_count / len(statistics)
     mean_time = sum_time / len(statistics) 
     minutes = int(mean_time / 60)
     seconds = int(mean_time % 60)
