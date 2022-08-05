@@ -12,43 +12,27 @@ import time
 SEPARATOR = "-" * 50
 GAME_RULES = """
 Game goal is guessing the 4 digit number.
+Your number must be in range 1000 - 9999
+and each digit must be unique.
 Right number and position is called Bull/s.
 Right number but false position is called Cow/s.""" 
 
-def playing_game():
+def playing_game(statistics):
     start_time = time.time()
     number = hidden_number()
     count = 1
     while True:
         players_number = players_input()
         bulls, cows = bulls_and_cows_count(number, players_number)
-        bull, cow = guesing_result(bulls, cows)
-        if bulls < 4:
-            print(f"{bulls} {bull}, {cows} {cow}.")
-            print(SEPARATOR)
-        end_game = check_game_end(bulls)
+        end_game = guesing_result(bulls, cows)
         if end_game:
             break
         count += 1 
     end_time = time.time()
     total_time = end_time - start_time
-    minutes = int(total_time / 60)
-    seconds = int(total_time % 60)
-    if minutes < 1:
-        phrase = "Amazing"
-    elif minutes in range(1, 2):
-        phrase = "Quite good"
-    elif minutes in range(2, 4):
-        phrase = "Average"
-    elif minutes in range(4, 6):
-        phrase = "not so good"
-    else:
-        phrase = "very bad"
-    print(SEPARATOR)
-    print(f"Correct, you've guessed the right number in {count} \nguesses, {minutes} minutes & {seconds} seconds!")
-    print(f"That's {phrase}!")
-    print(SEPARATOR)
-    play_again()
+    print_results(total_time, count)
+    statistics[len(statistics) + 1] = [total_time, count]
+    play_again(statistics)
        
 def welcome_player():
     print("Hi there!")
@@ -60,7 +44,8 @@ def welcome_player():
     if show_game_rules in ["y", "yes"]:
         print(GAME_RULES)
     print(SEPARATOR)
-
+    statistics = {}
+    playing_game(statistics)
 
 def players_input():
     while True:
@@ -83,17 +68,52 @@ def players_input():
             break
     return players_number        
 
-def play_again():
+def play_again(statistics):
     another_game = input("Would you like to play another game? Y/N ").lower()
     print(SEPARATOR)
     if another_game in ["y", "yes"]:
-        playing_game()
+        playing_game(statistics)
     elif another_game in ["n", "no"]:
-        pass
+        print_statistics(statistics)
     else:
         print("Wrong answer, try again.")
-        play_again()
-         
+        play_again(statistics)
+
+def print_statistics(statistics):
+    sum_time = 0
+    sum_count = 0
+    for game in statistics:
+        count = statistics[game][1]
+        total_time = statistics[game][0]
+        minutes = int(total_time / 60)
+        seconds = int(total_time % 60)
+        sum_count += count
+        sum_time += total_time
+        print(f"Game no.{game} ended in {count} guesses & {minutes} min {seconds} s.")
+    mean_count = int(sum_count / len(statistics))
+    mean_time = sum_time / len(statistics) 
+    minutes = int(mean_time / 60)
+    seconds = int(mean_time % 60)
+    print(f"Average results: {mean_count} guesses & {minutes} min {seconds} s.")   
+        
+def print_results(total_time, count):
+    minutes = int(total_time / 60)
+    seconds = int(total_time % 60)
+    if minutes < 1:
+        phrase = "Amazing"
+    elif minutes < 2:
+        phrase = "Quite good"
+    elif minutes < 3:
+        phrase = "Average"
+    elif minutes < 4:
+        phrase = "not so good"
+    else:
+        phrase = "very bad"
+    print(SEPARATOR)
+    print(f"Correct, you've guessed the right number in {count} \nguesses, {minutes} min & {seconds} s!")
+    print(f"That's {phrase}!")
+    print(SEPARATOR)
+      
 def bulls_and_cows_count(hidden_number, players_number):
     bulls = 0
     cows = 0
@@ -107,21 +127,18 @@ def bulls_and_cows_count(hidden_number, players_number):
     return bulls, cows
 
 def guesing_result(bulls, cows):
-    if bulls == 1:
-        bull = "bull"
-    else:
-        bull = "bulls"
-    if cows == 1:
-        cow = "cow"
-    else:
-        cow = "cows"  
-    return bull, cow
-
-def check_game_end(bulls):
-    if bulls == 4:
-        return True
-    return False        
-
+    bull = "bull"
+    cow = "cow"
+    if bulls != 1:
+        bull += "s"
+    if cows != 1:
+        cow += "s"
+    if bulls < 4:
+        print(f"{bulls} {bull}, {cows} {cow}.")
+        print(SEPARATOR)
+        return False
+    return True
+     
 def hidden_number():
     hidden_number = random.sample(range(10), 4)
     while hidden_number[0] == 0 and hidden_number[0] in hidden_number:
@@ -129,4 +146,3 @@ def hidden_number():
     return hidden_number
 
 welcome_player()
-playing_game()
